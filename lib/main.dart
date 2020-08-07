@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'fancy_button.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() => runApp(MaterialApp(
   debugShowCheckedModeBanner: false,
@@ -19,11 +21,10 @@ class _MyAppState extends State<MyApp> {
   List myTodos = List();
   String input ;
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    myTodos.add("Task-1");
+  createTask() {
+    DocumentReference docRef = Firestore.instance.collection("Planner").document(input);
+    Map<String,String> tasks = {"TaskTitle":input};
+    docRef.setData(tasks).whenComplete(() => null);
   }
 
   @override
@@ -48,9 +49,7 @@ class _MyAppState extends State<MyApp> {
                 actions: <Widget>[
                   FlatButton(
                     onPressed: (){
-                      setState(() {
-                        myTodos.add(input);
-                      });
+                      createTask();
                       Navigator.of(context).pop();
                     },
                     child: Text("Add"),
@@ -64,28 +63,34 @@ class _MyAppState extends State<MyApp> {
           color: Colors.white,
         ),
       ),
-      body: ListView.builder(
-        itemCount: myTodos.length,
-        itemBuilder: (BuildContext context, int i) {
-          return Dismissible(
-            key: Key(myTodos[i]),
-            child: Card(
-              elevation: 4,
-              margin: EdgeInsets.all(0),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(0)
-              ),
-              child: ListTile(
-                title: Text(myTodos[i]),
-                trailing: IconButton(icon: Icon(Icons.delete,
-                color: Colors.redAccent),
-                onPressed: () {
-                  setState(() {
-                    myTodos.removeAt(i);
-                  });
-                },),
-              ),
-            ),
+      body: StreamBuilder(stream: Firestore.instance.collection("Planner").snapshots(),
+        builder: (context,snapshots){
+          return ListView.builder(
+            shrinkWrap: true,
+            itemCount: snapshots.data.documents.length,
+            itemBuilder: (context, i) {
+              DocumentSnapshot docSnap = snapshots.data.documents[i];
+              return Dismissible(
+                key: Key(i.toString()),
+                child: Card(
+                  elevation: 4,
+                  margin: EdgeInsets.all(0),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(0)
+                  ),
+                  child: ListTile(
+                    title: Text(docSnap["TaskTitle"]),
+                    trailing: IconButton(icon: Icon(Icons.delete,
+                        color: Colors.redAccent),
+                      onPressed: () {
+                        setState(() {
+                          myTodos.removeAt(i);
+                        });
+                      },),
+                  ),
+                ),
+              );
+            },
           );
         },
       ),

@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "349553781600",
+    "firebase_url": "https://dayplanner-e0c20.firebaseio.com",
+    "project_id": "dayplanner-e0c20",
+    "storage_bucket": "dayplanner-e0c20.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:349553781600:android:ead51bfea90347bff74c05",
+        "android_client_info": {
+          "package_name": "com.example.day_planner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "349553781600-28aief2sn0kverp9m28faske83dpc39e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgj5cM3FCMei7t-n0o8rldDkj1X1qpIEA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "349553781600-28aief2sn0kverp9m28faske83dpc39e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
