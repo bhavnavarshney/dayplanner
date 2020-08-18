@@ -33,15 +33,13 @@ class SideBar extends StatelessWidget {
               ListTile(
                 title: Text('Weekly Goals'),
                 onTap: () {
-                  Goals(appTitle: 'Weekly Goals',);
-                  Navigator.pop(context);
+                  Navigator.push(context,MaterialPageRoute(builder: (context) => Goals(appTitle: 'Weekly Goals',)));
                 },
               ),
               ListTile(
                 title: Text('Monthly Goals'),
                 onTap: () {
-                  Goals(appTitle: 'Montly Goals',);
-                  Navigator.pop(context);
+                  Navigator.push(context,MaterialPageRoute(builder: (context) => Goals(appTitle: 'Monthly Goals',)));
                 },
               )
             ],

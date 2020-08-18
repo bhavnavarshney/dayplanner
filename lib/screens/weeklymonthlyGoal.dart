@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:day_planner/components/fancy_button.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Goals extends StatefulWidget {
   final String appTitle;
