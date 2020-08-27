@@ -1,16 +1,25 @@
-class Goal{
+import 'package:day_planner/database/db.dart';
+
+class Goal {
   int id;
-  String text;
+  String name;
+  bool isDone;
 
-  Goal({this.id,this.text});
+  Goal(this.id, this.name, this.isDone);
 
-  Map<String,dynamic> toMap() => {
-    "id":id,
-    "text":text,
-  };
+  Goal.fromJson(Map<String, dynamic> json) {
+    this.id = json[DatabaseCreator.id];
+    this.name = json[DatabaseCreator.name];
+    this.isDone = json[DatabaseCreator.isDone] == 1;
+  }
 
-  factory Goal.fromMap(Map<String,dynamic> json) => new Goal(
-    id : json["id"],
-    text: json["text"]
-  );
+//  Map<String,dynamic> toMap() => {
+//    "id":id,
+//    "name":name,
+//  };
+//
+//  factory Goal.fromMap(Map<String,dynamic> json) => new Goal(
+//    id : json["id"],
+//    text: json["text"]
+//  );
 }

@@ -10,7 +10,7 @@ class SideBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(appTitle),),
-      body: Goals(),
+      //body: Goals("Day Planner"),
       drawer: Drawer(
           child: ListView(
             padding: EdgeInsets.zero,
@@ -40,6 +40,12 @@ class SideBar extends StatelessWidget {
                 title: Text('Monthly Goals'),
                 onTap: () {
                   Navigator.push(context,MaterialPageRoute(builder: (context) => Goals(appTitle: 'Monthly Goals',)));
+                },
+              ),
+              ListTile(
+                title: Text('Yearly Goals'),
+                onTap: (){
+                  Navigator.push(context,MaterialPageRoute(builder: (context) => Goals(appTitle: 'Yearly Goals',)));
                 },
               )
             ],

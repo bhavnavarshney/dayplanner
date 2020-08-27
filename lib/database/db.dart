@@ -3,48 +3,66 @@ import 'dart:io';
 import 'package:day_planner/model/model.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:sqflite/sqlite_api.dart';
+import 'package:path/path.dart';
 
-class DBProvider{
-  DBProvider._();
-  static final DBProvider db = new DBProvider._();
-  Database _database;
+Database db;
 
-  Future<Database> get database async {
-    if (_database != null) return _database;
-    _database = await getWeeklyGoalDatabaseInstance();
-    return _database;
-  }
+class DatabaseCreator {
+  static const weekly = 'WeeklyGoals';
+  static const monthly = 'MonthlyGoals';
+  static const daily = 'DailyGoals';
+  static const yearly = 'YearlyGoals';
 
-  Future<Database> getWeeklyGoalDatabaseInstance() async {
-    Directory directory = await getApplicationDocumentsDirectory();
-    String path = join(directory.path, "dayplanner.db");
-    return await openDatabase(path, version: 1,
-        onCreate: (Database db, int version) async {
-          await db.execute("CREATE TABLE WeeklyGoals ("
-              "id integer primary key AUTOINCREMENT,"
-              "goal TEXT"
-              ")");
-        });
-  }
-    // Get all the weekly goals from DB
-    Future<List<Goal>> getAllWeeklyGoals() async {
-      final db = await database;
-      var response = await db.query("WeeklyGoals");
-      List<Goal> list = response.map((c) => Goal.fromMap(c)).toList();
-      return list;
+  static const id = 'id';
+  static const name = 'name';
+  static const isDone = 'isDone';
+
+  static void databaseLog(String funcName, String sql,
+      [List<Map<String, dynamic>> selectQueryResult,
+      int insertUpdateQueryResult]) {
+    print(funcName);
+    print(sql);
+    if (selectQueryResult != null) {
+      print(selectQueryResult);
+    } else if (insertUpdateQueryResult != null) {
+      print(insertUpdateQueryResult);
     }
-
-   addWeeklyGoalToDatabase(Goal g) async {
-    final db = await database;
-    var raw = await db.insert("WeeklyGoals",
-      g.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-    return raw;
   }
 
-  deleteWeeklyGoal(int id) async {
-    final db = await database;
-    return db.delete("WeeklyGoals", where: "id = ?", whereArgs: [id]);
+  Future<void> createTable(Database db, String tablename) async {
+    final tableSQL = '''CREATE TABLE $tablename
+    (
+      $id INTEGER PRIMARY KEY,
+      $name TEXT,
+      $isDone BIT NOT NULL
+    )''';
+    await db.execute(tableSQL);
   }
+
+  Future<String> getDatabasePath(String dbName) async {
+    final databasePath = await getDatabasesPath();
+    final path = join(databasePath, dbName);
+
+    //check if folder exists
+    if (await Directory(dirname(path)).exists()) {
+      //await deleteDatabase(path);
+    } else {
+      await Directory(dirname(path)).create(recursive: true);
+    }
+    return path;
   }
+
+  Future<void> initDatabase() async {
+    final path = await getDatabasePath('dayplanner_db');
+    db = await openDatabase(path, version: 1, onCreate: onCreate);
+    print(db);
+  }
+
+  Future<void> onCreate(Database db, int version) async {
+    await createTable(db, weekly);
+    await createTable(db, monthly);
+    await createTable(db, yearly);
+    await createTable(db, daily);
+  }
+}
