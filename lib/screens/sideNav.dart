@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:day_planner/screens/weeklymonthlyGoal.dart';
+import 'package:day_planner/screens/dailyplan.dart';
 
 class SideBar extends StatelessWidget {
   final appTitle = 'My DayPlanner';
@@ -27,7 +28,7 @@ class SideBar extends StatelessWidget {
               ListTile(
                 title: Text('Daily Plan'),
                 onTap: () {
-                  Navigator.pop(context);
+                  Navigator.push(context,MaterialPageRoute(builder: (context) => DailyPlan()));
                 },
               ),
               ListTile(

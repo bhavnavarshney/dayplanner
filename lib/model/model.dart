@@ -1,4 +1,5 @@
 import 'package:day_planner/database/db.dart';
+import 'package:flutter/material.dart';
 
 class Goal {
   int id;
@@ -23,3 +24,5 @@ class Goal {
 //    text: json["text"]
 //  );
 }
+
+
