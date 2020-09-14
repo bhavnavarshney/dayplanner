@@ -67,15 +67,8 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_week_view:
-    dependency: "direct main"
-    description:
-      name: flutter_week_view
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.0+1"
   intl:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: intl
       url: "https://pub.dartlang.org"
@@ -130,6 +123,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.2"
+  percent_indicator:
+    dependency: "direct main"
+    description:
+      name: percent_indicator
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.6"
   platform:
     dependency: transitive
     description:

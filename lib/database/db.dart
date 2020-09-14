@@ -17,6 +17,10 @@ class DatabaseCreator {
   static const id = 'id';
   static const name = 'name';
   static const isDone = 'isDone';
+  static const startTime = 'startTime';
+  static const endTime = 'endTime';
+  static const date = 'date';
+  static const description='description';
 
   static void databaseLog(String funcName, String sql,
       [List<Map<String, dynamic>> selectQueryResult,
@@ -40,6 +44,21 @@ class DatabaseCreator {
     await db.execute(tableSQL);
   }
 
+  Future<void> createDailyTable(Database db, String tablename) async {
+    final tableSQL = '''CREATE TABLE $tablename
+    (
+      $id INTEGER PRIMARY KEY,
+      $name TEXT,
+      $description TEXT,
+      $isDone BIT NOT NULL,
+      $startTime TEXT,
+      $endTime TEXT,
+      $date TEXT
+    )''';
+    await db.execute(tableSQL);
+    print('Created table Daily');
+  }
+
   Future<String> getDatabasePath(String dbName) async {
     final databasePath = await getDatabasesPath();
     final path = join(databasePath, dbName);
@@ -54,6 +73,7 @@ class DatabaseCreator {
   }
 
   Future<void> initDatabase() async {
+    print("initDatabase");
     final path = await getDatabasePath('dayplanner_db');
     db = await openDatabase(path, version: 1, onCreate: onCreate);
     print(db);
@@ -63,6 +83,6 @@ class DatabaseCreator {
     await createTable(db, weekly);
     await createTable(db, monthly);
     await createTable(db, yearly);
-    await createTable(db, daily);
+    await createDailyTable(db, daily);
   }
 }

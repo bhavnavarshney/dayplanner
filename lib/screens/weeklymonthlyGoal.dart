@@ -87,7 +87,7 @@ class _GoalsState extends State<Goals> {
   }
 
   void createGoal(String text) async {
-    int count = await RepositoryService.goalCount(this.tablename);
+    int count = await RepositoryService.count(this.tablename);
     final goal = Goal(count, text, false);
     await RepositoryService.addGoal(goal, this.tablename);
     setState(() {

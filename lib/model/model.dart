@@ -25,4 +25,26 @@ class Goal {
 //  );
 }
 
+class Task {
+  int id;
+  String name;
+  String description;
+  bool isDone;
+  String startTime;
+  String endTime;
+  String date;
+
+
+  Task(this.id, this.name, this.description,this.isDone,this.startTime,this.endTime,this.date);
+
+  Task.fromJson(Map<String, dynamic> json) {
+    this.id = json[DatabaseCreator.id];
+    this.name = json[DatabaseCreator.name];
+    this.description = json[DatabaseCreator.description];
+    this.isDone = json[DatabaseCreator.isDone] == 1;
+    this.startTime = json[DatabaseCreator.startTime];
+    this.endTime = json[DatabaseCreator.endTime];
+    this.date = json[DatabaseCreator.date];
+  }
+}
 
