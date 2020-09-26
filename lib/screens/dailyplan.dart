@@ -27,26 +27,26 @@ class _DailyPlanState extends State<DailyPlan> {
         this.taskList = taskList;
         this.count = taskList.length;
       });
-    print('TaskList: $taskList[0].name');
-    print(taskList.length);
+    //print('TaskList: $taskList[0].name');
   }
 
 
   @override
   Widget build(BuildContext context) {
+    print("Will I be executed?");
     this.futureTask = RepositoryService.getAllTasks(this.tablename);
     futureTask.then((taskList) {
       this.taskList = taskList;
       this.count = taskList.length;
     });
-    print(taskList[0].name);
+    print(taskList);
     print(count);
+    print("I got called");
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('DayPlanner'),
-      ),
+      appBar: AppBar(title: Text("Look at your Day!",style: TextStyle(color: Colors.purple),),backgroundColor: Colors.yellow,),
       backgroundColor: Colors.white,
-      body: SafeArea(
+      body: Container(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(
             20,
@@ -62,7 +62,7 @@ class _DailyPlanState extends State<DailyPlan> {
                     Text(
                       'Today',
                       style: TextStyle(
-                          fontSize: 30.0, fontWeight: FontWeight.w700),
+                          fontSize: 30.0, fontWeight: FontWeight.w700, color: Colors.purple),
                     ),
                     Container(
                       height: 40.0,
@@ -115,60 +115,57 @@ class _DailyPlanState extends State<DailyPlan> {
                 ),
               ),
               Expanded(
-                child: SingleChildScrollView(
-                  child: Container(
-                    padding: EdgeInsets.symmetric(vertical: 20.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Expanded(
-                          flex: 5,
-                          child: ListView.builder(
-                            itemCount: count,
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            itemBuilder: (BuildContext context, int index) =>
-                                Card(
-                                  color: Colors.lightGreenAccent,
-                                  shadowColor: Colors.green,
-                                  child: ListTile(
-                                    leading: Checkbox(
-                                      value: taskList[index].isDone,
-                                      onChanged: (bool newValue) {
-                                        print('onChanged');
-                                        setState(() {
-                                          print(newValue);
-                                          taskList[index].isDone = newValue;
-                                          //completeGoal(item);
-                                        });
-                                      }),
-                                    title: Text(
-                                      '${this.taskList[index].name != null ? this.taskList[index].name  : ""}',
-                                      style: TextStyle(
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                    subtitle: Padding(
-                                      padding: const EdgeInsets.only(top: 10.0),
-                                      child: Text(
-                                        this.taskList[index].description != null ? this.taskList[index].description : "",
-                                        style: TextStyle(
-                                          fontSize: 14.0,
-                                          color: Colors.black54,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                    ),
-                                    trailing: Row(),
+                child: ListView.builder(
+                    itemCount: this.count,
+                    itemBuilder: (BuildContext ctx, int index) {
+                      print("ItemBuilder : $this.taskList[0].name");
+                      return Center(
+                        child: Card(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                               ListTile(
+                                leading: Checkbox(
+                                    value: taskList[index].isDone,
+                                    onChanged: (bool newValue) {
+                                      print('onChanged');
+                                      setState(() {
+                                        print(newValue);
+                                        taskList[index].isDone = newValue;
+                                        //completeGoal(item);
+                                      });
+                                    }),
+                                 title: Text(
+                                   '${this.taskList[index].name != null ? this.taskList[index].name  : ""}',
+                                   style: TextStyle(
+                                     fontSize: 16.0,
+                                     fontWeight: FontWeight.w700,
+                                   ),
+                                 ),
+                                subtitle: Text(
+                                  this.taskList[index].description != null ? this.taskList[index].description : "",
+                                  style: TextStyle(
+                                    fontSize: 14.0,
+                                    color: Colors.black54,
+                                    fontWeight: FontWeight.w400,
                                   ),
                                 ),
+                              ),
+                              ButtonBar(
+                                children: <Widget>[
+                                  Text("StartTime: ${this.taskList[index].startTime}",style: TextStyle(
+                                    color: Colors.green,
+                                  ),),
+                                  Text("EndTime: ${this.taskList[index].endTime}",style: TextStyle(
+                                    color: Colors.redAccent,
+                                  ),),
+                                ],
+                              ),
+                            ],
                           ),
-                        )
-                      ],
-                    ),
-                  ),
+                        ),
+                      );
+                    }
                 ),
               ),
             ],

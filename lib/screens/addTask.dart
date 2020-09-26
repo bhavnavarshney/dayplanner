@@ -1,6 +1,9 @@
+import 'package:day_planner/components/fancy_button.dart';
 import 'package:day_planner/screens/dailyplan.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:day_planner/components/topcontainer.dart';
+import 'package:intl/intl.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:day_planner/model/model.dart';
 import 'package:day_planner/database/repository_service.dart';
 
@@ -14,214 +17,139 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
   String title;
   TimeOfDay time = TimeOfDay.now();
   TextEditingController timeCtl = TextEditingController();
+  TextEditingController timeCtl2 = TextEditingController();
   String startTime;
   String endTime;
   String date;
   String description;
+  final format = DateFormat("dd-MM-yyyy HH:mm");
 
   void createTask() async {
     int count = await RepositoryService.count(this.tablename);
+    this.date = DateTime.now().toString();
+    print(this.title);
+    print(this.description);
     final task = Task(count, this.title, this.description, false,this.startTime,this.endTime,this.date);
     await RepositoryService.addTask(task, this.tablename);
   }
 
   @override
   Widget build(BuildContext context) {
-    _pickStartTime() async {
-      TimeOfDay t = await showTimePicker(
-        context: context,
-        initialTime: time,
-      );
-      if(t != null) {
-        time = t;
-        print(time);
-        timeCtl.text = time.format(context).toString();
-        startTime = timeCtl.text;
-      }
-    }
-
-    _pickEndTime() async {
-      TimeOfDay t = await showTimePicker(
-        context: context,
-        initialTime: time,
-      );
-      if(t != null) {
-        time = t;
-        print(time);
-        timeCtl.text = time.format(context).toString();
-        endTime = timeCtl.text;
-      }
-    }
-
-    double width = MediaQuery.of(context).size.width;
-    var downwardIcon = Icon(
-      Icons.keyboard_arrow_down,
-      color: Colors.black54,
-    );
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Create New Task"),
-      ),
-      body: SafeArea(
-        child: Column(
-          children: <Widget>[
-            TopContainer(
-              padding: EdgeInsets.fromLTRB(20, 20, 20, 40),
-              width: width,
-              child: Column(
-                children: <Widget>[
-                  SizedBox(
-                    height: 30,
+      return Scaffold(
+        appBar: AppBar(title: Text("Add Task"),),
+        body: SingleChildScrollView(
+          child: Center(child:Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              SizedBox(height: 20,),
+              TextFormField(
+                decoration: const InputDecoration(
+                  icon: Icon(Icons.assignment,color: Colors.purple,),
+                  hintText: 'Add Title here',
+                  labelText: 'Title *',
+                ),
+                onChanged: (String val){
+                  this.title = val;
+                },
+              ),
+              SizedBox(height: 20,),
+              TextFormField(
+                decoration: const InputDecoration(
+                  icon: Icon(Icons.description,color: Colors.purple,),
+                  hintText: 'Add Description here',
+                  labelText: 'Description',
+                ),
+                onChanged: (String val){
+                  this.description = val;
+                },
+              ),
+              SizedBox(height: 20,),
+              DateTimeField(
+                format: format,
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.alarm,
+                    color: Colors.purple,
+                    ),
+                    labelText: 'Start : Date and Time',
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        'Your Task',
-                        style: TextStyle(
-                            fontSize: 30.0, fontWeight: FontWeight.w700),
-                      ),
-                    ],
+                onShowPicker: (context, currentValue) async {
+                  final date = await showDatePicker(
+                      context: context,
+                      firstDate: DateTime(1900),
+                      initialDate: currentValue ?? DateTime.now(),
+                      lastDate: DateTime(2100));
+                  if (date != null) {
+                    final time = await showTimePicker(
+                      context: context,
+                      initialTime:
+                      TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+                    );
+                    this.startTime = DateTimeField.combine(date, time).toString();
+                    print(this.startTime);
+                    return DateTimeField.combine(date, time);
+                  } else {
+                    this.startTime = currentValue.toString();
+                    return currentValue;
+                  }
+                },
+              ),
+              DateTimeField(
+                format: format,
+                decoration: InputDecoration(
+                  icon: Icon(Icons.alarm,
+                  color: Colors.purple,
                   ),
-                  SizedBox(height: 20),
-                  Container(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                      TextFormField(
-                      style: TextStyle(color: Colors.black87),
-                    minLines: 1,
-                    maxLines: 1,
-                    decoration: InputDecoration(
-                        //suffixIcon: icon == null ? null: icon,
-                        labelText: 'Title',
-                        labelStyle: TextStyle(color: Colors.black45),
-
-                        focusedBorder:
-                        UnderlineInputBorder(borderSide: BorderSide(color: Colors.black)),
-                        border:
-                        UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey))),
-                        onChanged: (String value) {
-                          this.title = value;
-                        },
-                  ),
-//                          Row(
-//                            mainAxisAlignment: MainAxisAlignment.start,
-//                            crossAxisAlignment: CrossAxisAlignment.end,
-//                            children: <Widget>[
-//                              Expanded(
-//                                child: MyTextFieldDate(
-//                                  label: 'Date',
-//                                  icon: downwardIcon,
-//                                ),
-//
-//                              ),
-//                              //DailyPlan.calendarIcon(),
-//                            ],
-//                          )
+                  labelText: 'End : Date and Time',
+                ),
+                onShowPicker: (context, currentValue) async {
+                  final date = await showDatePicker(
+                      context: context,
+                      firstDate: DateTime(1900),
+                      initialDate: currentValue ?? DateTime.now(),
+                      lastDate: DateTime(2100));
+                  if (date != null) {
+                    final time = await showTimePicker(
+                      context: context,
+                      initialTime:
+                      TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+                    );
+                    this.endTime = DateTimeField.combine(date, time).toString();
+                    print(this.endTime);
+                    return DateTimeField.combine(date, time);
+                  } else {
+                    this.endTime = currentValue.toString();
+                  }
+                },
+              ),
+              SizedBox(height: 30,),
+              RaisedButton(
+                onPressed: () {
+                  createTask();
+                  Navigator.pop(context);
+                },
+                textColor: Colors.white,
+                //padding: const EdgeInsets.all(0.0),
+                child: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: <Color>[
+                        Color(0xFF0D47A1),
+                        Color(0xFF1976D2),
+                        Color(0xFF42A5F5),
                       ],
-                      ))
-                ],
-              ),
-            ),
-            Expanded(
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Expanded(
-                            child: TextFormField(
-                              controller: timeCtl,
-                              style: TextStyle(color: Colors.black87),
-                              minLines: 1,
-                              maxLines: 1,
-                              decoration: InputDecoration(
-                                 // suffixIcon: icon == null ? null: icon,
-                                  labelText: 'Start Time',
-                                  labelStyle: TextStyle(color: Colors.black45),
-
-                                  focusedBorder:
-                                  UnderlineInputBorder(borderSide: BorderSide(color: Colors.black)),
-                                  border:
-                                  UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey))),
-                              onTap: _pickStartTime,
-                          ),
-                          ),
-                          SizedBox(width: 40),
-                          Expanded(
-                              child: TextFormField(
-                                controller: timeCtl,
-                                style: TextStyle(color: Colors.black87),
-                                minLines: 1,
-                                maxLines: 1,
-                                decoration: InputDecoration(
-                                    //suffixIcon: icon == null ? null: icon,
-                                    labelText: 'End Time',
-                                    labelStyle: TextStyle(color: Colors.black45),
-
-                                    focusedBorder:
-                                    UnderlineInputBorder(borderSide: BorderSide(color: Colors.black)),
-                                    border:
-                                    UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey))),
-                                onTap: _pickEndTime,
-                              ),
-                              ),
-                        ],
-                      ),
-                      SizedBox(height: 20),
-                  TextFormField(
-                    style: TextStyle(color: Colors.black87),
-                    minLines: 1,
-                    maxLines: 1,
-                    decoration: InputDecoration(
-                        //suffixIcon: icon == null ? null: icon,
-                        labelText: 'Description',
-                        labelStyle: TextStyle(color: Colors.black45),
-
-                        focusedBorder:
-                        UnderlineInputBorder(borderSide: BorderSide(color: Colors.black)),
-                        border:
-                        UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey))),
-                    onChanged: (String value) {
-                      this.description = value;
-                    },
-                  ),
-                    ],
-                  ),
-                )),
-            Container(
-              height: 80,
-              width: width,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Container(
-                    child: RaisedButton(child: Text(
-                      'Create Task'),
-                      onPressed: (){
-                        print('Task Creating');
-                        createTask();
-                        print('Task Created');
-                        Navigator.push(context,MaterialPageRoute(builder: (context) => DailyPlan()));
-                      },
-                    ),
-                    alignment: Alignment.center,
-                    margin: EdgeInsets.fromLTRB(20, 10, 20, 20),
-                    width: width - 40,
-                    decoration: BoxDecoration(
-                      color: Colors.purple,
-                      borderRadius: BorderRadius.circular(30),
                     ),
                   ),
-                ],
+                  //padding: const EdgeInsets.all(10.0),
+                  child:
+                  const Text('Save', style: TextStyle(fontSize: 20)),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
+        ),
+      );
   }
+
 }

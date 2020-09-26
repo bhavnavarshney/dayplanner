@@ -23,7 +23,7 @@ class RepositoryService {
   }
 
   static Future<List<Task>> getAllTasks(String tablename) async {
-    final sql = ''' SELECT * FROM $tablename
+    final sql = ''' SELECT * FROM $tablename order by date desc 
     ''';
     final data = await db.rawQuery(sql);
     List<Task> tasks = List();
@@ -31,7 +31,7 @@ class RepositoryService {
       final todo = Task.fromJson(node);
       tasks.add(todo);
     }
-   // print('RepositoryService:$sql,$data,$tasks');
+    print('RepositoryService:$sql,$data,$tasks');
     return tasks;
   }
 
