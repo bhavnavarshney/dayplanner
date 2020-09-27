@@ -24,14 +24,19 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
   String description;
   final format = DateFormat("dd-MM-yyyy HH:mm");
 
-  void createTask() async {
+  void createTask(BuildContext context) async {
     int count = await RepositoryService.count(this.tablename);
     this.date = DateTime.now().toString();
-    print(this.title);
-    print(this.description);
     final task = Task(count, this.title, this.description, false,this.startTime,this.endTime,this.date);
     await RepositoryService.addTask(task, this.tablename);
+    print("Task is created now");
+    print("CreateTask call done");
+    Navigator.pop(context, "TaskAdded");
   }
+
+//  void submit() async {
+//    await createTask();
+//  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,8 +130,7 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
               SizedBox(height: 30,),
               RaisedButton(
                 onPressed: () {
-                  createTask();
-                  Navigator.pop(context);
+                  createTask(context);
                 },
                 textColor: Colors.white,
                 //padding: const EdgeInsets.all(0.0),

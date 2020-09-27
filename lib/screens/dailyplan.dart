@@ -17,6 +17,7 @@ class _DailyPlanState extends State<DailyPlan> {
   Future<List<Task>> futureTask;
   final String tablename = "DailyGoals";
   int count = 0;
+  String status = "TaskNotAdded";
 
   @override
   initState() {
@@ -24,27 +25,112 @@ class _DailyPlanState extends State<DailyPlan> {
     print('DailyPlan: Init called');
     this.futureTask = RepositoryService.getAllTasks(this.tablename);
     futureTask.then((taskList) {
-        this.taskList = taskList;
-        this.count = taskList.length;
-      });
-    //print('TaskList: $taskList[0].name');
+      this.taskList = taskList;
+      this.count = taskList.length;
+    });
+    print("Original Count:$this.count");
   }
 
+  _navigateAndDisplaySelection(BuildContext context) async {
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => CreateNewTaskPage(),
+      ),
+    );
+    if (result=="TaskAdded") {
+      print("I will execute!");
+      await print("Why the below is not getting executed?");
+      setState(() {
+        this.futureTask = RepositoryService.getAllTasks(this.tablename);
+        futureTask.then((taskList) {
+          this.taskList = taskList;
+          this.count = taskList.length;
+        });
+      });
+      print(this.taskList[0].name);
+      print("List is refreshed!Did you see the updated view?");
+      getTasklist();
+    }
+  }
+
+  ListView getTasklist() {
+    return ListView.builder(
+        itemCount: this.count,
+        itemBuilder: (BuildContext ctx, int index) {
+          print("ItemBuilder : $this.taskList[0].name");
+          return Center(
+            child: Card(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  ListTile(
+                    leading: Checkbox(
+                        value: taskList[index].isDone,
+                        onChanged: (bool newValue) {
+                          print('onChanged');
+                          setState(() {
+                            print(newValue);
+                            taskList[index].isDone = newValue;
+                            //completeGoal(item);
+                          });
+                        }),
+                    title: Text(
+                      '${this.taskList[index].name != null ? this.taskList[index].name : ""}',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    subtitle: Text(
+                      this.taskList[index].description != null
+                          ? this.taskList[index].description
+                          : "",
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        color: Colors.black54,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                  ButtonBar(
+                    children: <Widget>[
+                      Text(
+                        "StartTime: ${this.taskList[index].startTime}",
+                        style: TextStyle(
+                          color: Colors.green,
+                        ),
+                      ),
+                      Text(
+                        "EndTime: ${this.taskList[index].endTime}",
+                        style: TextStyle(
+                          color: Colors.redAccent,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
-    print("Will I be executed?");
     this.futureTask = RepositoryService.getAllTasks(this.tablename);
     futureTask.then((taskList) {
       this.taskList = taskList;
       this.count = taskList.length;
     });
-    print(taskList);
-    print(count);
-    print("I got called");
 
     return Scaffold(
-      appBar: AppBar(title: Text("Look at your Day!",style: TextStyle(color: Colors.purple),),backgroundColor: Colors.yellow,),
+      appBar: AppBar(
+        title: Text(
+          "Look at your Day!",
+          style: TextStyle(color: Colors.purple),
+        ),
+        backgroundColor: Colors.yellow,
+      ),
       backgroundColor: Colors.white,
       body: Container(
         child: Padding(
@@ -62,7 +148,9 @@ class _DailyPlanState extends State<DailyPlan> {
                     Text(
                       'Today',
                       style: TextStyle(
-                          fontSize: 30.0, fontWeight: FontWeight.w700, color: Colors.purple),
+                          fontSize: 30.0,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.purple),
                     ),
                     Container(
                       height: 40.0,
@@ -73,13 +161,8 @@ class _DailyPlanState extends State<DailyPlan> {
                       ),
                       child: FlatButton(
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => CreateNewTaskPage(),
-                            ),
-                          );
-                        },
+                          _navigateAndDisplaySelection(context);
+                            },
                         child: Center(
                           child: Text(
                             'Add task',
@@ -115,58 +198,7 @@ class _DailyPlanState extends State<DailyPlan> {
                 ),
               ),
               Expanded(
-                child: ListView.builder(
-                    itemCount: this.count,
-                    itemBuilder: (BuildContext ctx, int index) {
-                      print("ItemBuilder : $this.taskList[0].name");
-                      return Center(
-                        child: Card(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                               ListTile(
-                                leading: Checkbox(
-                                    value: taskList[index].isDone,
-                                    onChanged: (bool newValue) {
-                                      print('onChanged');
-                                      setState(() {
-                                        print(newValue);
-                                        taskList[index].isDone = newValue;
-                                        //completeGoal(item);
-                                      });
-                                    }),
-                                 title: Text(
-                                   '${this.taskList[index].name != null ? this.taskList[index].name  : ""}',
-                                   style: TextStyle(
-                                     fontSize: 16.0,
-                                     fontWeight: FontWeight.w700,
-                                   ),
-                                 ),
-                                subtitle: Text(
-                                  this.taskList[index].description != null ? this.taskList[index].description : "",
-                                  style: TextStyle(
-                                    fontSize: 14.0,
-                                    color: Colors.black54,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ),
-                              ButtonBar(
-                                children: <Widget>[
-                                  Text("StartTime: ${this.taskList[index].startTime}",style: TextStyle(
-                                    color: Colors.green,
-                                  ),),
-                                  Text("EndTime: ${this.taskList[index].endTime}",style: TextStyle(
-                                    color: Colors.redAccent,
-                                  ),),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }
-                ),
+                 child:getTasklist(),
               ),
             ],
           ),

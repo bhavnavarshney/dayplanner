@@ -96,7 +96,7 @@ class RepositoryService {
     VALUES (?,?,?,?,?,?,?)''';
     List<dynamic> params = [g.id, g.name,g.description, g.isDone ? 1 : 0,g.startTime,g.endTime,g.date];
     final result = await db.rawInsert(sql, params);
-    print('AddTask Status:$result');
+    print("AddTask Status : $result");
   }
 
   static Future<void> updateGoalStatus(Goal g, String tablename) async {
