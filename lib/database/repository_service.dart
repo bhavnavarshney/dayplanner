@@ -23,7 +23,7 @@ class RepositoryService {
   }
 
   static Future<List<Task>> getAllTasks(String tablename) async {
-    final sql = ''' SELECT * FROM $tablename order by date desc 
+    final sql = ''' SELECT * FROM $tablename order by date asc 
     ''';
     final data = await db.rawQuery(sql);
     List<Task> tasks = List();

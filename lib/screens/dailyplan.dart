@@ -19,16 +19,27 @@ class _DailyPlanState extends State<DailyPlan> {
   int count = 0;
   String status = "TaskNotAdded";
 
+  completeGoal(Task g) async {
+    await RepositoryService.deleteTask(g, this.tablename);
+    setState(() {
+      futureTask = RepositoryService.getAllTasks(this.tablename);
+      futureTask.then((lists) {
+        setState(() {
+          this.taskList = lists;
+          this.count = taskList.length;
+        });
+      });
+    });
+  }
+
   @override
   initState() {
     super.initState();
-    print('DailyPlan: Init called');
     this.futureTask = RepositoryService.getAllTasks(this.tablename);
     futureTask.then((taskList) {
       this.taskList = taskList;
       this.count = taskList.length;
     });
-    print("Original Count:$this.count");
   }
 
   _navigateAndDisplaySelection(BuildContext context) async {
@@ -38,8 +49,6 @@ class _DailyPlanState extends State<DailyPlan> {
       ),
     );
     if (result=="TaskAdded") {
-      print("I will execute!");
-      await print("Why the below is not getting executed?");
       setState(() {
         this.futureTask = RepositoryService.getAllTasks(this.tablename);
         futureTask.then((taskList) {
@@ -47,8 +56,6 @@ class _DailyPlanState extends State<DailyPlan> {
           this.count = taskList.length;
         });
       });
-      print(this.taskList[0].name);
-      print("List is refreshed!Did you see the updated view?");
       getTasklist();
     }
   }
@@ -57,7 +64,6 @@ class _DailyPlanState extends State<DailyPlan> {
     return ListView.builder(
         itemCount: this.count,
         itemBuilder: (BuildContext ctx, int index) {
-          print("ItemBuilder : $this.taskList[0].name");
           return Center(
             child: Card(
               child: Column(
@@ -67,11 +73,9 @@ class _DailyPlanState extends State<DailyPlan> {
                     leading: Checkbox(
                         value: taskList[index].isDone,
                         onChanged: (bool newValue) {
-                          print('onChanged');
                           setState(() {
-                            print(newValue);
                             taskList[index].isDone = newValue;
-                            //completeGoal(item);
+                            completeGoal(taskList[index]);
                           });
                         }),
                     title: Text(

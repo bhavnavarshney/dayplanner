@@ -90,8 +90,7 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
                       initialTime:
                       TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
                     );
-                    this.startTime = DateTimeField.combine(date, time).toString();
-                    print(this.startTime);
+                    this.startTime = DateFormat("HH:mm").format(DateTimeField.combine(date, time)).toString();
                     return DateTimeField.combine(date, time);
                   } else {
                     this.startTime = currentValue.toString();
@@ -119,8 +118,7 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
                       initialTime:
                       TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
                     );
-                    this.endTime = DateTimeField.combine(date, time).toString();
-                    print(this.endTime);
+                    this.endTime = DateFormat("HH:mm").format(DateTimeField.combine(date, time)).toString();
                     return DateTimeField.combine(date, time);
                   } else {
                     this.endTime = currentValue.toString();
